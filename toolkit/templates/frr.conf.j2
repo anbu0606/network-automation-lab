@@ -1,0 +1,20 @@
+frr defaults traditional
+hostname {{ hostname }}
+!
+{% for intf in interfaces %}
+interface {{ intf.name }}
+ description {{ intf.desc }}
+ ip address {{ intf.ip }}
+{% if intf.bw is defined %}
+ bandwidth {{ intf.bw }}
+{% endif %}
+!
+{% endfor %}
+router ospf
+ ospf router-id {{ router_id }}
+ auto-cost reference-bandwidth {{ ospf.reference_bandwidth }}
+ network {{ ospf.network }} area 0
+{% for name in passive %}
+ passive-interface {{ name }}
+{% endfor %}
+!

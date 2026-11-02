@@ -1,0 +1,62 @@
+name: netsim-bgp
+
+topology:
+  defaults:
+    kind: linux
+
+  nodes:
+    r1:
+      image: quay.io/frrouting/frr:10.0.0
+      binds: ["daemons:/etc/frr/daemons", "r1.conf:/etc/frr/frr.conf"]
+      exec: ["sysctl -w net.ipv4.ip_forward=1","ip route del default"]
+    r2:
+      image: quay.io/frrouting/frr:10.0.0
+      binds: ["daemons:/etc/frr/daemons", "r2.conf:/etc/frr/frr.conf"]
+      exec: ["sysctl -w net.ipv4.ip_forward=1","ip route del default"]
+    r3:
+      image: quay.io/frrouting/frr:10.0.0
+      binds: ["daemons:/etc/frr/daemons", "r3.conf:/etc/frr/frr.conf"]
+      exec: ["sysctl -w net.ipv4.ip_forward=1"]
+    r4:
+      image: quay.io/frrouting/frr:10.0.0
+      binds: ["daemons:/etc/frr/daemons", "r4.conf:/etc/frr/frr.conf"]
+      exec: ["sysctl -w net.ipv4.ip_forward=1","ip route del default"]
+
+    client1:
+      image: ghcr.io/srl-labs/network-multitool
+      exec: ["ip addr add 20.238.131.20/24 dev eth1", "ip route replace default via 20.238.131.1"]
+    intranet:
+      image: ghcr.io/srl-labs/network-multitool
+      exec: ["ip addr add 20.238.124.10/24 dev eth1", "ip route replace default via 20.238.124.1"]
+    web:
+      image: ghcr.io/srl-labs/network-multitool
+      exec: ["ip addr add 20.238.155.11/24 dev eth1", "ip route replace default via 20.238.155.1"]
+    ssh:
+      image: ghcr.io/srl-labs/network-multitool
+      exec: ["ip addr add 20.238.232.10/24 dev eth1", "ip route replace default via 20.238.232.1"]
+    internet:
+      image: quay.io/frrouting/frr:10.0.0
+      binds: ["daemons:/etc/frr/daemons", "internet.conf:/etc/frr/frr.conf"]
+      exec: ["sysctl -w net.ipv4.ip_forward=1"]
+    minerva:
+      image: quay.io/frrouting/frr:10.0.0
+      binds: ["daemons:/etc/frr/daemons", "minerva.conf:/etc/frr/frr.conf"]
+      exec: ["sysctl -w net.ipv4.ip_forward=1"]
+    extclient1:
+      image: ghcr.io/srl-labs/network-multitool
+      exec: ["ip addr add 167.89.219.130/24 dev eth1", "ip route replace default via 167.89.219.1"]
+
+  links:
+    - endpoints: ["r1:eth1", "r3:eth1"]
+    - endpoints: ["r1:eth2", "r4:eth2"]
+    - endpoints: ["r1:eth3", "r2:eth3"]
+    - endpoints: ["r2:eth1", "r3:eth2"]
+    - endpoints: ["r2:eth2", "r4:eth1"]
+    - endpoints: ["r1:eth4", "client1:eth1"]
+    - endpoints: ["r2:eth4", "intranet:eth1"]
+    - endpoints: ["r3:eth3", "web:eth1"]
+    - endpoints: ["r4:eth3", "ssh:eth1"]
+    - endpoints: ["r3:eth4", "internet:eth1"]
+    - endpoints: ["internet:eth2", "minerva:eth1"]
+    - endpoints: ["minerva:eth2", "extclient1:eth1"]
+    - endpoints: ["r3:eth5", "minerva:eth3"]

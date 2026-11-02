@@ -1,0 +1,36 @@
+# Source of truth for the Lab 1 (netsim-ospf) routers.
+ospf:
+  network: 20.238.0.0/16
+  reference_bandwidth: 10000      # Mbps, the same on every router
+
+routers:
+  r1:
+    router_id: 1.1.1.1
+    passive: [eth4]
+    interfaces:          # bw is in Mbps, as FRR expects
+      - {name: eth1, desc: to-r3, ip: 20.238.142.1/24, bw: 100}
+      - {name: eth2, desc: to-r4, ip: 20.238.149.1/24, bw: 100}
+      - {name: eth3, desc: to-r2, ip: 20.238.10.1/24, bw: 1000}
+      - {name: eth4, desc: clients-lan, ip: 20.238.131.1/24}
+  r2:
+    router_id: 2.2.2.2
+    passive: [eth4]
+    interfaces:
+      - {name: eth1, desc: to-r3, ip: 20.238.209.2/24, bw: 1000}
+      - {name: eth2, desc: to-r4, ip: 20.238.172.2/24, bw: 1000}
+      - {name: eth3, desc: to-r1, ip: 20.238.10.2/24, bw: 1000}
+      - {name: eth4, desc: intranet-lan, ip: 20.238.124.1/24}
+  r3:
+    router_id: 3.3.3.3
+    passive: [eth3]
+    interfaces:
+      - {name: eth1, desc: to-r1, ip: 20.238.142.2/24, bw: 100}
+      - {name: eth2, desc: to-r2, ip: 20.238.209.1/24, bw: 1000}
+      - {name: eth3, desc: dmz, ip: 20.238.155.1/24}
+  r4:
+    router_id: 4.4.4.4
+    passive: [eth3]
+    interfaces:
+      - {name: eth1, desc: to-r2, ip: 20.238.172.1/24, bw: 1000}
+      - {name: eth2, desc: to-r1, ip: 20.238.149.2/24, bw: 100}
+      - {name: eth3, desc: ssh-lan, ip: 20.238.232.1/24}

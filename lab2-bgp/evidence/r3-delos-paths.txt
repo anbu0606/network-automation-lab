@@ -1,0 +1,11 @@
+BGP routing table entry for 167.89.0.0/16, version 16
+Paths: (2 available, best #2, table default)
+  Not advertised to any peer
+  65200 65200 65200
+    203.0.113.2 from 203.0.113.2 (5.5.5.5)
+      Origin IGP, metric 0, valid, external
+      Last update: Wed Oct 28 00:46:42 2026
+  65000 65200
+    135.180.199.2 from 135.180.199.2 (9.9.9.9)
+      Origin IGP, valid, external, best (AS Path)
+      Last update: Wed Oct 28 00:43:14 2026
